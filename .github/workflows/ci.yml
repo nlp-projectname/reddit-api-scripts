@@ -38,13 +38,10 @@ jobs:
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)/src" >> $GITHUB_ENV
 
-    # - name: Run pre-commit hooks
-    #   run: |
-    #     source venv/bin/activate
-    #     pip install pre-commit
-    #     pre-commit run --all-files
+    - name: Run pre-commit hooks
+      run: |
+        pre-commit run --all-files
 
     - name: Run tests with coverage
       run: |
-        source venv/bin/activate
         pytest -v
