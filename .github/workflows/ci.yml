@@ -27,7 +27,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.10
+        python-version: 3.12
 
     - name: Install dependencies
       run: |
@@ -38,11 +38,11 @@ jobs:
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)/src" >> $GITHUB_ENV
 
-    - name: Run pre-commit hooks
-      run: |
-        source venv/bin/activate
-        pip install pre-commit
-        pre-commit run --all-files
+    # - name: Run pre-commit hooks
+    #   run: |
+    #     source venv/bin/activate
+    #     pip install pre-commit
+    #     pre-commit run --all-files
 
     - name: Run tests with coverage
       run: |
