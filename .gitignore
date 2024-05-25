@@ -181,4 +181,7 @@ reddit_data/*
 # Except the .gitkeep file
 !reddit_data/.gitkeep
 
+.pytest_cache/
+.benchmarks/
+
 # End of https://www.toptal.com/developers/gitignore/api/python
