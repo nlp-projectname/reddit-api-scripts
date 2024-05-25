@@ -44,7 +44,7 @@ def fetch_reddit_data(subreddits: List[str], num_posts: int) -> List[Dict]:
         os.makedirs(csv_dir, exist_ok=True)  # ensure the directory exists
         csv_filename = os.path.join(csv_dir, f"{subreddit}_data.csv")
         # print(f"Saving CSV to: {csv_filename}")
-        df.to_csv(csv_filename, index=False)
+        df.to_csv(csv_filename, index=True)
         all_data.extend(subreddit_data)
 
     return all_data
