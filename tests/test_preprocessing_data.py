@@ -76,6 +76,9 @@ def test_preprocess_dataframe_multiple_rows():
     }
     df = pd.DataFrame(data)
     processed_df = preprocess_dataframe(df.copy())
-    expected_contents = ["happi smile face smile eye", "go park cri face"]
+    expected_contents = [
+        "happi smile face smile eye",
+        "go park cri face",
+    ]  # hardcoded (maybe better to change to reflect script)
     assert processed_df["content"].iloc[0] == expected_contents[0]
     assert processed_df["content"].iloc[1] == expected_contents[1]
