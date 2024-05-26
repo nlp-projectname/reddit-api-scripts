@@ -27,7 +27,7 @@ def expected_emoji_text():
 
 @pytest.fixture
 def expected_preprocessed_text():
-    return "happi go park happi"
+    return "happi go park happi smile face smile eye"
 
 
 @pytest.fixture
@@ -46,7 +46,7 @@ def expected_processed_dataframe():
         {
             "title": ["Sample Title"],
             "score": [1],
-            "content": ["happi happi smile face smile eye"],
+            "content": ["happi go park happi smile face smile eye"],
         }
     )
 
