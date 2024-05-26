@@ -7,12 +7,12 @@ on:
   pull_request:
     branches:
       - main
-  pull_request_target:
-    types: [ready_for_review]
+      types: [opened, reopened, synchronize, ready_for_review]
+    workflow_dispatch:
 
 jobs:
   test:
-    if: ${{ github.event.pull_request.draft == false }}
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
