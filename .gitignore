@@ -183,5 +183,6 @@ reddit_data/*
 
 .pytest_cache/
 .benchmarks/
+.DS_Store
 
 # End of https://www.toptal.com/developers/gitignore/api/python
