@@ -1,12 +1,7 @@
 import pandas as pd
 import pytest
 
-from src.text_preprocessing import (
-    convert_emojis,
-    expand_contractions,
-    preprocess_dataframe,
-    preprocess_text,
-)
+from src.text_preprocessing import TextPreprocessor
 from src.utils import contractions_dict
 
 
@@ -52,19 +47,25 @@ def expected_processed_dataframe():
 
 
 def test_expand_contractions(sample_text, expected_expanded_text):
-    assert expand_contractions(sample_text.lower()) == expected_expanded_text
+    preprocessor = TextPreprocessor()
+    assert (
+        preprocessor._expand_contractions(sample_text.lower()) == expected_expanded_text
+    )
 
 
 def test_convert_emojis(expected_expanded_text, expected_emoji_text):
-    assert convert_emojis(expected_expanded_text) == expected_emoji_text
+    preprocessor = TextPreprocessor()
+    assert preprocessor._convert_emojis(expected_expanded_text) == expected_emoji_text
 
 
 def test_preprocess_text(sample_text, expected_preprocessed_text):
-    assert preprocess_text(sample_text) == expected_preprocessed_text
+    preprocessor = TextPreprocessor()
+    assert preprocessor.preprocess_text(sample_text) == expected_preprocessed_text
 
 
 def test_preprocess_dataframe(sample_dataframe, expected_processed_dataframe):
-    processed_df = preprocess_dataframe(sample_dataframe.copy())
+    preprocessor = TextPreprocessor()
+    processed_df = preprocessor.preprocess_dataframe(sample_dataframe.copy())
     pd.testing.assert_frame_equal(processed_df, expected_processed_dataframe)
 
 
@@ -75,7 +76,8 @@ def test_preprocess_dataframe_multiple_rows():
         "content": ["I'm happy 😊", "I can't go to the park 😢"],
     }
     df = pd.DataFrame(data)
-    processed_df = preprocess_dataframe(df.copy())
+    preprocessor = TextPreprocessor()
+    processed_df = preprocessor.preprocess_dataframe(df.copy())
     expected_contents = [
         "happi smile face smile eye",
         "go park cri face",
