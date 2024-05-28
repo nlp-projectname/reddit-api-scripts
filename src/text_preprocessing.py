@@ -13,53 +13,73 @@ nltk.download("punkt")
 nltk.download("stopwords")
 nltk.download("wordnet")
 
-stop_words = set(stopwords.words("english"))
 
+class TextPreprocessor:
+    def __init__(
+        self,
+        lowercase=True,
+        expand_contractions=True,
+        convert_emojis=True,
+        remove_urls=True,
+        remove_punctuation=True,
+        remove_stopwords=True,
+        apply_stemming=True,
+        apply_lemmatization=True,
+    ):
+        self.lowercase = lowercase
+        self.expand_contractions = expand_contractions
+        self.convert_emojis = convert_emojis
+        self.remove_urls = remove_urls
+        self.remove_punctuation = remove_punctuation
+        self.remove_stopwords = remove_stopwords
+        self.apply_stemming = apply_stemming
+        self.apply_lemmatization = apply_lemmatization
+        self.stop_words = set(stopwords.words("english"))
+        self.stemmer = PorterStemmer()
+        self.lemmatizer = WordNetLemmatizer()
 
-def expand_contractions(text: str) -> str:
-    contractions_re = re.compile("(%s)" % "|".join(contractions_dict.keys()))
-
-    def replace(match):
-        return contractions_dict[match.group(0)]
-
-    return contractions_re.sub(replace, text)
-
-
-# TODO: check this is the desired behavior, otherwise simply eliminate
-def convert_emojis(text: str) -> str:
-    for emot in UNICODE_EMOJI:
-        text = text.replace(
-            emot,
-            " ".join(UNICODE_EMOJI[emot].replace(",", "").replace(":", "").split()),
+    def _expand_contractions(self, text: str) -> str:
+        contractions_re = re.compile(
+            r"\b(" + "|".join(contractions_dict.keys()) + r")\b"
         )
-    return text.replace("_", " ")
 
+        def replace(match):
+            return contractions_dict[match.group(0)]
 
-def preprocess_text(text: str) -> str:
-    # print("Original:", text)
-    text = text.lower()
-    # print("Lowercased:", text)
-    text = expand_contractions(text)
-    # print("Contractions expanded:", text)
-    text = convert_emojis(text)
-    # print("Emojis converted:", text)
-    text = re.sub(r"http\S+|www\S+|@\S+", "", text)  # remove URLs or usernames
-    # print("URLs removed:", text)
-    text = re.sub(r"[^A-Za-z\s]", "", text)  # remove chars, punctuation and numbers
-    # print("Chars removed:", text)
-    tokens = word_tokenize(text)
-    # print("Tokenized:", tokens)
-    tokens = [word for word in tokens if word not in stop_words]
-    # print("Stopwords removed:", tokens)
-    tokens = [PorterStemmer().stem(word) for word in tokens]
-    # print("Stemmed:", tokens)
-    tokens = [WordNetLemmatizer().lemmatize(word) for word in tokens]
-    # print("Lemmatized:", tokens)
-    text = " ".join(tokens)
-    # print("Final text:", text)
-    return text
+        return contractions_re.sub(replace, text)
 
+    def _convert_emojis(self, text: str) -> str:
+        for emot in UNICODE_EMOJI:
+            text = text.replace(
+                emot,
+                " ".join(UNICODE_EMOJI[emot].replace(",", "").replace(":", "").split()),
+            )
+        return text.replace("_", " ")
 
-def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
-    df["content"] = df["content"].apply(preprocess_text)
-    return df
+    def preprocess_text(self, text: str) -> str:
+        if self.lowercase:
+            text = text.lower()
+        if self.expand_contractions:
+            text = self._expand_contractions(text)
+        if self.convert_emojis:
+            text = self._convert_emojis(text)
+        if self.remove_urls:
+            text = re.sub(r"http\S+|www\S+|@\S+", "", text)  # remove URLs or usernames
+        if self.remove_punctuation:
+            text = re.sub(
+                r"[^A-Za-z\s]", "", text
+            )  # remove chars, punctuation and numbers
+        tokens = word_tokenize(text)
+        if self.remove_stopwords:
+            tokens = [word for word in tokens if word not in self.stop_words]
+        if self.apply_stemming:
+            tokens = [self.stemmer.stem(word) for word in tokens]
+        if self.apply_lemmatization:
+            tokens = [self.lemmatizer.lemmatize(word) for word in tokens]
+        return " ".join(tokens)
+
+    def preprocess_dataframe(
+        self, df: pd.DataFrame, text_column: str = "content"
+    ) -> pd.DataFrame:
+        df[text_column] = df[text_column].apply(self.preprocess_text)
+        return df
